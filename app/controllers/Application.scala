@@ -45,9 +45,8 @@ object Application extends Controller {
   def plzDex(url: String) = Action.async{ r =>
     implicit def timeout = Timeout.intToTimeout(60000)
     (actor ? url).map{
-      case DexRes(files) => 
-        val filesJson = files.map{ _.toString |> JsString.apply } |> JsArray.apply
-        JsObject(Seq("files" -> filesJson)) |> Ok.apply[JsValue]
+      case DexRes(zipFile) => 
+        Ok.sendFile(content=zipFile, fileName=_=>"thatFile.zip")
       case that => BadRequest(that.toString)
     }
   }
@@ -73,7 +72,9 @@ case class MyAct() extends Actor {
         utils.ZipSplitter.doDex(rawjars)
       } match {
         case Success(that) => sender ! that
-        case Failure(that) => sender ! that
+        case Failure(that) => 
+          that.printStackTrace()
+          sender ! that
       }
   }
 

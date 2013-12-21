@@ -26,7 +26,7 @@ object ZipSplitter {
      * @transform yields the new accumulator
      */
     def takeUntil[U](zero: U)(cond: U => Boolean)(transform: (U, T) => U): (IndexedSeq[T], IndexedSeq[T]) = {
-      def mkFun = {
+      def mkFun: T => Boolean = {
         var acc = zero
         elem: T =>   
           acc = transform(acc, elem)
@@ -107,13 +107,21 @@ object ZipSplitter {
     files.filter{ _.getName.endsWith(extension) }
   }
 
-  def doDex(files: FileSeq): DexRes = files.map{ file =>
-    val out = file.getAbsoluteFile() + "-dexed.jar"
-    val outFile = new File(out)
-    Main.main(Array(s"--output=$out", file.getAbsolutePath))
-    println("done with " + file)
-    outFile
-  }.toList |> DexRes.apply
+  def doDex(files: FileSeq): DexRes = {
+    val dexedFiles = files.map{ file =>
+      val out = file.getAbsoluteFile() + "-dexed.jar"
+      val outFile = new File(out)
+      Main.main(Array(s"--output=$out", file.getAbsolutePath))
+      println("done with " + file)
+      outFile
+    }
+    // zip the remaining stuff
+    val unused = mkTemp("shit")
+    unused.delete()
+    val zipFile = new ZipFile(unused.getAbsolutePath)
+    dexedFiles.foreach{ zipFile.addFile(_, zipParams) }
+    DexRes(zipFile.getFile)
+  }
 }
 
-case class DexRes(paths: List[File])
+case class DexRes(zipFile: File)
