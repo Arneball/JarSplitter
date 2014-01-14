@@ -1,7 +1,18 @@
-@(message: String)
-
-@main("Welcome to Play") {
-
-    @play20.welcome(message)
-
-}
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  function pelle(rgb) {
+	  $("body").css("background-color", rgb.color)
+  }
+  function crazy(resp) {
+	  $("#content").append(resp.message);
+  }
+  </script>
+</head>
+<body>
+  <div id="content" style="width: 250px; height: 250px; background-color: white;"></div>
+  <iframe src="/async" style="display: none;"></iframe>
+  <iframe src="/google" style="display: none;"></iframe>
+</body>
+</html>

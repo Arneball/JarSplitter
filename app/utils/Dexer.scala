@@ -52,7 +52,7 @@ object ZipSplitter {
 
   lazy val zipParams =  new ZipParameters{
     setCompressionLevel(Zip4jConstants.COMP_DEFLATE)
-    setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_MAXIMUM)
+    setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_FAST)
   }
   
   def helper(file: File): FileSeq = transform(file, mkTemp("blaha"))
@@ -84,8 +84,8 @@ object ZipSplitter {
       
       // Foreach folder and file add it to the jar
       val (folders, files) = innerTemp.listFiles.partition(_.isDirectory)
-      folders.foreach{ folder => tmpZip.addFolder(folder, zipParams) }
-      files.foreach{ file => tmpZip.addFile(file, zipParams) }
+      folders.foreach{ tmpZip.addFolder(_, zipParams) }
+      files.foreach{ tmpZip.addFile(_, zipParams) }
       
       // return reference to temp file
       tmpZip.getFile()

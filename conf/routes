@@ -2,12 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /                           controllers.Application.index
-
 # Map static resources from the /public folder to the /assets URL path
+
+GET     /                           controllers.Application.index
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 GET		/musta/:url					controllers.Application.plzDex(url)
 
-GET		/get/:file					controllers.Application.getFile(file)
+GET		/async					controllers.Application.async
+
+GET     /google                 controllers.Application.asyncWs
